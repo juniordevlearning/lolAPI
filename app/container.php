@@ -1,6 +1,8 @@
 <?php
 
-use App\Controllers\ApiController;
+use App\Controllers\HomeController;
+use App\LolApi;
+
 // Create DIC
 $container = $app->getContainer();
 
@@ -8,7 +10,13 @@ $container['view'] = function ($container) {
     return new \Slim\Views\PhpRenderer('./templates/');
 };
 
-$container['ApiController'] = function($c) {
+$container['LolApi'] = function($c) {
+    $guzzle = new GuzzleHttp\Client();
+    return new LolApi($guzzle);
+};
+
+$container['HomeController'] = function($c) {
+    $api = $c->get('LolApi');
     $view = $c->get('view');
-    return new ApiController($view);
+    return new HomeController($view, $api);
 };
